@@ -52,7 +52,7 @@ console.log("Server running on 3000");
 //mysql DB
 var mysql = require('mysql');
 var mysqlConfig = {
-    host : "localhost",
+    host : "127.0.0.1",
     port : "3306",
     user : "root",
     password : "12341234",
@@ -60,7 +60,7 @@ var mysqlConfig = {
 };
 
 var conn = mysql.createConnection(mysqlConfig);
-conn.query("SELECT * FROM player", function(err, rows)
+conn.query("SELECT * FROM room", function(err, rows)
 {
     if(err)
     {
@@ -75,20 +75,26 @@ conn.query("SELECT * FROM player", function(err, rows)
 //Socket.io
 io.sockets.on('connection', function(socket){
     console.log("connected");
-    socket.emit('message', {message : 'welcome to the chat'});
-    socket.on('signin', function(data) {
+    socket.emit('message', {message : 'welcome'});
+
+    //Sign in
+    socket.on('signup', function(data) {
+        console.log("ROOMLIST");
         var peopleId = parseInt(Math.random() * Math.pow(10,5));
-        console.log("insert into player ('id', 'name') VALUES ('" + peopleId +"','" +data.name + "');");
         conn.query("insert into player (id, name) VALUES ('" + peopleId +"','" + data.name + "');" , function(err, rows)
         {
             console.log(rows);
         });
-        io.sockets.emit('signin', {player_id : peopleId});
+//        io.sockets.emit('signup', {player_id : peopleId});
     });
 
+    //Room
     socket.on('roomList', function(data) {
-        peopleId = parseInt(Math.random() * Math.pow(10,10));
-        io.sockets.emit('roomList', {room_id : peopleId, name : peopleId , owner : peopleId});
+        conn.query("select * from room" , function(err, rows)
+        {
+            console.log(rows);
+            io.sockets.emit('roomList', {rooms : rows});
+        });
     });
 
     socket.on('roomEnter', function(data) {
@@ -100,6 +106,24 @@ io.sockets.on('connection', function(socket){
         peopleId = parseInt(Math.random() * Math.pow(10,10));
         io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
     });
+
+    socket.on('roomLeave', function(data) {
+        peopleId = parseInt(Math.random() * Math.pow(10,10));
+        io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
+    });
+
+    socket.on('roomPolice', function(data) {
+        peopleId = parseInt(Math.random() * Math.pow(10,10));
+        io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
+    });
+
+    socket.on('roomThief', function(data) {
+        peopleId = parseInt(Math.random() * Math.pow(10,10));
+        io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
+    });
+
+
+   //Map
 });
 
 

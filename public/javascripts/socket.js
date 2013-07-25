@@ -14,5 +14,10 @@ $(document).ready(function()
         console.log(data);
     });
 
-    socket.emit('signin',  {name:"JH"});
+    socket.on('roomList', function (data) {
+        console.log(data);
+    });
+
+//    socket.emit('signup',  {name:"JH"});
+    socket.emit('roomList',  {name:"JH"});
 });
