@@ -6,7 +6,7 @@ $(document).ready(function()
         console.log("connected");
     });
 
-    socket.on('signin', function (data) {
+    socket.on('signup', function (data) {
         console.log(data);
     });
 
@@ -18,6 +18,6 @@ $(document).ready(function()
         console.log(data);
     });
 
-//    socket.emit('signup',  {name:"JH"});
+    socket.emit('signup',  {name:"JH"});
     socket.emit('roomList',  {name:"JH"});
 });

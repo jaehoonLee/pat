@@ -85,7 +85,7 @@ io.sockets.on('connection', function(socket){
         {
             console.log(rows);
         });
-//        io.sockets.emit('signup', {player_id : peopleId});
+        io.sockets.emit('signup', {player_id : peopleId});
     });
 
     //Room
