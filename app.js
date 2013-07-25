@@ -73,6 +73,9 @@ conn.query("SELECT * FROM room", function(err, rows)
 
 
 //Socket.io
+var HashMap = require('hashmap').HashMap;
+var socketMap = new HashMap();
+
 io.sockets.on('connection', function(socket){
     console.log("connected");
     socket.emit('message', {message : 'welcome'});
@@ -97,19 +100,78 @@ io.sockets.on('connection', function(socket){
         });
     });
 
-    socket.on('roomEnter', function(data) {
-        peopleId = parseInt(Math.random() * Math.pow(10,10));
-        io.sockets.emit('roomEnter', {room_status : peopleId});
+    socket.on('roomMake', function(data) {
+        conn.query("insert into room (name, owner) VALUES ('" + data.name +"','" + data.owner + "');" , function(err, rows)
+        {
+            if(err)
+            {
+                io.sockets.emit('roomMake', {result : 'false'});
+                console.log(err);
+            }else
+            {
+                io.sockets.emit('roomMake', {result : 'true'});
+                console.log(rows);
+            }
+        });
     });
 
-    socket.on('roomMake', function(data) {
-        peopleId = parseInt(Math.random() * Math.pow(10,10));
-        io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
+    socket.on('roomEnter', function(data) {
+
+        conn.query("update player set room_id = '" + data.room_id + "' where id ='" + data.id + "'" , function(err, rows)
+        {
+            if(err)
+            {
+                io.sockets.emit('roomEnter', {result : 'false'});
+                console.log(err);
+            }else
+            {
+                io.sockets.emit('roomEnter', {result : 'true'});
+                console.log(rows);
+            }
+        });
+
+        //update Room Member
+        var playerList = socketMap.get(data.room_id);
+        if(typeof playerList == 'undefined')
+            socketMap.set(data.room_id, [data.id]);
+        else
+            playerList.push(data.id);
+
+        playerList = socketMap.get(data.room_id);
+        console.log(playerList);
     });
 
     socket.on('roomLeave', function(data) {
-        peopleId = parseInt(Math.random() * Math.pow(10,10));
-        io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
+        conn.query("update player set room_id = '-1" + "' where id ='" + data.id + "'" , function(err, rows)
+        {
+            if(err)
+            {
+                io.sockets.emit('roomLeave', {result : 'false'});
+                console.log(err);
+            }else
+            {
+                io.sockets.emit('roomLeave', {result : 'true'});
+                console.log(rows);
+            }
+        });
+
+        //update Room Member
+        var playerList = socketMap.get(data.room_id);
+        if(typeof playerList == 'undefined')
+            return;
+        else
+        {
+            for(var i=0; i<playerList.length; i++)
+            {
+                if(playerList[i] == data.id)
+                {
+                    playerList.splice(i, 1);
+                }
+            }
+        }
+
+        playerList = socketMap.get(data.room_id);
+        console.log(playerList);
     });
 
     socket.on('roomPolice', function(data) {
