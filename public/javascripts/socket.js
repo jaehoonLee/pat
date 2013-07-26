@@ -92,3 +92,8 @@ function posUpdate()
 {
     socket.emit('posUpdate', {room_id:"1", longitude:"1", latitude:"1", sender_id:"21025"});
 }
+
+function roomInfo()
+{
+    socket.emit('roomInfo', {room_id:"1"});
+}
