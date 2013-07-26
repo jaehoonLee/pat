@@ -2,8 +2,24 @@ extends layout
 
 block content
   script(src='javascripts/socket.js')
-  h1= title
-  p Welcome to #{title}
+  h1= '도둑과 경찰 테스트'
+  p Console로 들어오는 정보를 확인하세요.
+
+  h3= '로그인 Request'
+  button(onClick="signup()")
+    로그인
+
+  h3= '방 Request'
+  button(onClick="roomList()")
+    리스트가져오기
+  button(onClick="roomMake()")
+    방만들기
+  button(onClick="roomEnter()")
+    입장
+  button(onClick="roomLeave()")
+    나가기
+
+  h3= '게임 Request'
   button(onClick="plus()")
     더하기
   button(onClick="minus()")
