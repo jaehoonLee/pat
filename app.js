@@ -105,11 +105,11 @@ io.sockets.on('connection', function(socket){
         {
             if(err)
             {
-                io.sockets.emit('roomMake', {result : 'false'});
+                io.sockets.emit('roomMake', {result : 0});
                 console.log(err);
             }else
             {
-                io.sockets.emit('roomMake', {result : 'true'});
+                io.sockets.emit('roomMake', {result : 1, room_id:rows.insertId});
                 console.log(rows);
             }
         });
@@ -121,11 +121,11 @@ io.sockets.on('connection', function(socket){
         {
             if(err)
             {
-                io.sockets.emit('roomEnter', {result : 'false'});
+                io.sockets.emit('roomEnter', {result : 0});
                 console.log(err);
             }else
             {
-                io.sockets.emit('roomEnter', {result : 'true'});
+                io.sockets.emit('roomEnter', {result : 1});
                 console.log(rows);
             }
         });
@@ -146,11 +146,11 @@ io.sockets.on('connection', function(socket){
         {
             if(err)
             {
-                io.sockets.emit('roomLeave', {result : 'false'});
+                io.sockets.emit('roomLeave', {result : 0});
                 console.log(err);
             }else
             {
-                io.sockets.emit('roomLeave', {result : 'true'});
+                io.sockets.emit('roomLeave', {result : 1});
                 console.log(rows);
             }
         });

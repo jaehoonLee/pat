@@ -18,20 +18,46 @@ $(document).ready(function()
         console.log(data);
     });
 
+    socket.on('roomMake', function (data) {
+        console.log(data);
+    });
+
+    socket.on('roomEnter', function (data) {
+        console.log(data);
+    });
+
+
+
+
+
 //    socket.emit('signup',  {name:"JH"});
 //    socket.emit('roomList');
 //    socket.emit('roomMake', {name:"MADMAD", owner:"adbdse"});
-      socket.emit('roomEnter', {room_id:"1", id:"21025"});
+//    socket.emit('roomEnter', {room_id:"1", id:"21025"});
 //    socket.emit('roomLeave', {id:"21025"});
 });
 
+function signup()
+{
+    socket.emit('signup',  {name:"JH"});
+}
 
-function plus()
+function roomList()
+{
+    socket.emit('roomList');
+}
+
+function roomMake()
+{
+    socket.emit('roomMake', {name:"MADMAD", owner:"adbdse"});
+}
+
+function roomEnter()
 {
     socket.emit('roomEnter', {room_id:"1", id:"21025"});
 }
 
-function minus()
+function roomLeave()
 {
     socket.emit('roomLeave', {id:"21025"});
 }
