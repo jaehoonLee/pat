@@ -112,7 +112,7 @@ io.sockets.on('connection', function(socket){
 
                     }else
                     {
-                        socket.emit('roomInfo', rows);
+                        socket.emit('roomInfo', {info : rows});
                         selectRooms();
                     }
                 });
@@ -139,7 +139,7 @@ io.sockets.on('connection', function(socket){
                 {
 //                    io.sockets.emit('roomInfo')
                     console.log(rows);
-                    io.sockets.in(data.room_id).emit('roomInfo', rows);
+                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
                 });
             }
         });
@@ -177,7 +177,7 @@ io.sockets.on('connection', function(socket){
                     console.log(rows);
                     if(rows.length != 0)
                     {
-                        io.sockets.in(roomID).emit('roomInfo', rows);
+                        io.sockets.in(roomID).emit('roomInfo', {info : rows});
                     }else{
 //                        console.log("delete==============================================>")
                         deleteRoom(roomID);
@@ -221,7 +221,7 @@ io.sockets.on('connection', function(socket){
                 {
 //                    io.sockets.emit('roomInfo')
                     console.log(rows);
-                    io.sockets.in(data.room_id).emit('roomInfo', rows);
+                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
                 });
             }
         });
@@ -246,12 +246,36 @@ io.sockets.on('connection', function(socket){
                 {
 //                    io.sockets.emit('roomInfo')
                     console.log(rows);
-                    io.sockets.in(data.room_id).emit('roomInfo', rows);
+                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
                 });
             }
         });
-
 //        io.sockets.emit('moveThief', {room_status : peopleId, room_status : peopleId});
+    });
+
+    socket.on('posUpdate', function(data) {
+        conn.query("update player set longitude = " + data.longitude + ", latitude = " + data.latitude +  " where id ='" + data.sender_id + "'" , function(err, rows)
+        {
+            if(err)
+            {
+                socket.emit('posUpdate', {result : 0});
+                console.log(err);
+            }else
+            {
+                console.log(rows);
+                socket.emit('posUpdate', {result : 1});
+
+
+                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
+                {
+                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
+                });
+            }
+        });
+    });
+
+    socket.on('catchPlayer', function(data) {
+
     });
 
 

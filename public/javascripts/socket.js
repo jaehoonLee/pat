@@ -42,6 +42,10 @@ $(document).ready(function()
         console.log(data);
     });
 
+    socket.on('posUpdate', function (data) {
+        console.log(data);
+    });
+
 //    socket.emit('signup',  {name:"JH"});
 //    socket.emit('roomList');
 //    socket.emit('roomMake', {name:"MADMAD", owner:"adbdse"});
@@ -82,4 +86,9 @@ function movePolice()
 function moveThief()
 {
     socket.emit('moveThief', {room_id:"1", sender_id:"21025"});
+}
+
+function posUpdate()
+{
+    socket.emit('posUpdate', {room_id:"1", longitude:"1", latitude:"1", sender_id:"21025"});
 }
