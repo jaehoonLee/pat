@@ -217,12 +217,7 @@ io.sockets.on('connection', function(socket){
                 console.log(rows);
                 socket.emit('movePolice', {result : 1});
 
-                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
-                {
-//                    io.sockets.emit('roomInfo')
-                    console.log(rows);
-                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
-                });
+                updateRoomInfo(data.room_id);
             }
         });
 
@@ -242,14 +237,14 @@ io.sockets.on('connection', function(socket){
                 console.log(rows);
                 socket.emit('moveThief', {result : 1});
 
-                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
-                {
-//                    io.sockets.emit('roomInfo')
-                    console.log(rows);
-                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
-                });
+                updateRoomInfo(data.room_id);
             }
         });
+//        io.sockets.emit('moveThief', {room_status : peopleId, room_status : peopleId});
+    });
+
+    socket.on('roomInfo', function(data) {
+        updateRoomInfo(data.room_id);
 //        io.sockets.emit('moveThief', {room_status : peopleId, room_status : peopleId});
     });
 
@@ -413,5 +408,13 @@ function deleteRoom(room_id)
         {
             selectRooms();
         }
+    });
+}
+
+function updateRoomInfo(room_id)
+{
+    conn.query("select * from player where room_id = '" + room_id + "'" , function(err, rows)
+    {
+        io.sockets.in(room_id).emit('roomInfo', {info : rows});
     });
 }
