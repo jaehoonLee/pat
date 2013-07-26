@@ -26,9 +26,21 @@ $(document).ready(function()
         console.log(data);
     });
 
+    socket.on('roomLeave', function (data) {
+        console.log(data);
+    });
 
+    socket.on('roomInfo', function (data) {
+        console.log(data);
+    });
 
+    socket.on('movePolice', function (data) {
+        console.log(data);
+    });
 
+    socket.on('moveThief', function (data) {
+        console.log(data);
+    });
 
 //    socket.emit('signup',  {name:"JH"});
 //    socket.emit('roomList');
@@ -49,15 +61,25 @@ function roomList()
 
 function roomMake()
 {
-    socket.emit('roomMake', {name:"MADMAD", owner:"adbdse"});
+    socket.emit('roomMake', {name:"MADMAD", owner:"21025"});
 }
 
-function roomEnter()
+function roomEnter(sender_id)
 {
-    socket.emit('roomEnter', {room_id:"1", id:"21025"});
+    socket.emit('roomEnter', {room_id:"1", sender_id:sender_id});
 }
 
-function roomLeave()
+function roomLeave(sender_id)
 {
-    socket.emit('roomLeave', {id:"21025"});
+    socket.emit('roomLeave', {room_id:"1", sender_id:sender_id});
+}
+
+function movePolice()
+{
+    socket.emit('movePolice', {room_id:"1", sender_id:"21025"});
+}
+
+function moveThief()
+{
+    socket.emit('moveThief', {room_id:"1", sender_id:"21025"});
 }

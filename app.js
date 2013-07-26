@@ -71,64 +71,26 @@ conn.query("SELECT * FROM room", function(err, rows)
     console.log(rows);
 });
 
-
 //Socket.io
 var HashMap = require('hashmap').HashMap;
 var socketMap = new HashMap();
 
 io.sockets.on('connection', function(socket){
-    console.log("connected");
     socket.emit('message', {message : 'welcome'});
 
     //Sign in
     socket.on('signup', function(data) {
-        console.log("ROOMLIST");
         var peopleId = parseInt(Math.random() * Math.pow(10,5));
         conn.query("insert into player (id, name) VALUES ('" + peopleId +"','" + data.name + "');" , function(err, rows)
         {
             console.log(rows);
         });
-        io.sockets.emit('signup', {player_id : peopleId});
+        socket.emit('signup', {player_id : peopleId});
     });
 
     //Room
     socket.on('roomList', function(data) {
-        conn.query("select * from room" , function(err, rows)
-        {
-            var roomRows = rows;
-            console.log(roomRows);
-            console.log(roomRows[0]);
-
-            var index = 0;
-            for(var i in roomRows)
-            {
-                var roomRow = roomRows[i];
-
-                conn.query("select * from player where id='"  + roomRow.owner + "'", function(err, rows)
-                {
-                    index++;
-                    if(err)
-                    {
-
-                    }
-                    else
-                    {
-                        if(rows.length == 1)
-                        {
-                            roomRows[index - 1].owner = rows[0].name;
-                        }
-
-                        if(index == roomRows.length)
-                        {
-                            io.sockets.emit('roomList', {rooms : roomRows});
-                        }
-                    }
-                });
-
-
-            }
-
-        });
+        selectRoomsForClient(socket);
     });
 
     socket.on('roomMake', function(data) {
@@ -136,83 +98,160 @@ io.sockets.on('connection', function(socket){
         {
             if(err)
             {
-                io.sockets.emit('roomMake', {result : 0});
-                console.log(err);
+                socket.emit('roomMake', {result : 0});
             }else
             {
-                io.sockets.emit('roomMake', {result : 1, room_id:rows.insertId});
-                console.log(rows);
+                //join socket in group
+                var roomId = rows.insertId;
+                socket.join(rows.insertId);
+                socket.emit('roomMake', {result : 1, room_id:rows.insertId});
+                conn.query("update player set room_id = '" + roomId + "', type = 1 where id ='" + data.owner + "'" , function(err, rows)
+                {
+                    if(err)
+                    {
+
+                    }else
+                    {
+                        socket.emit('roomInfo', rows);
+                        selectRooms();
+                    }
+                });
             }
         });
     });
 
     socket.on('roomEnter', function(data) {
 
-        conn.query("update player set room_id = '" + data.room_id + "' where id ='" + data.id + "'" , function(err, rows)
+        conn.query("update player set room_id = '" + data.room_id + "', type = 1 where id ='" + data.sender_id + "'" , function(err, rows)
         {
             if(err)
             {
-                io.sockets.emit('roomEnter', {result : 0});
+                socket.emit('roomEnter', {result : 0});
                 console.log(err);
             }else
             {
-                io.sockets.emit('roomEnter', {result : 1});
+                socket.emit('roomEnter', {result : 1});
                 console.log(rows);
+
+                socket.join(data.room_id);
+
+                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
+                {
+//                    io.sockets.emit('roomInfo')
+                    console.log(rows);
+                    io.sockets.in(data.room_id).emit('roomInfo', rows);
+                });
             }
         });
-
         //update Room Member
-        var playerList = socketMap.get(data.room_id);
-        if(typeof playerList == 'undefined')
-            socketMap.set(data.room_id, [data.id]);
-        else
-            playerList.push(data.id);
 
-        playerList = socketMap.get(data.room_id);
-        console.log(playerList);
+//        var playerList = socketMap.get(data.room_id);
+//        if(typeof playerList == 'undefined')
+//            socketMap.set(data.room_id, [{id : data.sender_id, socket: socket}]);
+//        else
+//            playerList.push({id : data.sender_id, socket: socket});
+//
+//        playerList = socketMap.get(data.room_id);
+//        console.log(playerList);
+
+        //Send Room Change
+
     });
 
     socket.on('roomLeave', function(data) {
-        conn.query("update player set room_id = '-1" + "' where id ='" + data.id + "'" , function(err, rows)
+        conn.query("update player set type = 0, room_id = '-1" + "' where id ='" + data.sender_id + "'" , function(err, rows)
         {
             if(err)
             {
-                io.sockets.emit('roomLeave', {result : 0});
+                socket.emit('roomLeave', {result : 0});
                 console.log(err);
             }else
             {
-                io.sockets.emit('roomLeave', {result : 1});
-                console.log(rows);
+                var roomID = data.room_id;
+                socket.emit('roomLeave', {result : 1});
+                socket.leave(data.room_id);
+
+                conn.query("select * from player where room_id = '" + roomID  + "'" , function(err, rows)
+                {
+//                    io.sockets.emit('roomInfo')
+                    console.log(rows);
+                    if(rows.length != 0)
+                    {
+                        io.sockets.in(roomID).emit('roomInfo', rows);
+                    }else{
+//                        console.log("delete==============================================>")
+                        deleteRoom(roomID);
+                    }
+                });
             }
         });
 
         //update Room Member
-        var playerList = socketMap.get(data.room_id);
-        if(typeof playerList == 'undefined')
-            return;
-        else
+//        var playerList = socketMap.get(data.room_id);
+//        if(typeof playerList == 'undefined')
+//            return;
+//        else
+//        {
+//            for(var i=0; i<playerList.length; i++)
+//            {
+//                if(playerList[i].id == data.sender_id)
+//                {
+//                    playerList.splice(i, 1);
+//                }
+//            }
+//        }
+//
+//        playerList = socketMap.get(data.room_id);
+//        console.log(playerList);
+    });
+
+    socket.on('movePolice', function(data) {
+        conn.query("update player set type = 1" + " where id ='" + data.sender_id + "'" , function(err, rows)
         {
-            for(var i=0; i<playerList.length; i++)
+            if(err)
             {
-                if(playerList[i] == data.id)
+                socket.emit('movePolice', {result : 0});
+                console.log(err);
+            }else
+            {
+                console.log(rows);
+                socket.emit('movePolice', {result : 1});
+
+                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
                 {
-                    playerList.splice(i, 1);
-                }
+//                    io.sockets.emit('roomInfo')
+                    console.log(rows);
+                    io.sockets.in(data.room_id).emit('roomInfo', rows);
+                });
             }
-        }
+        });
 
-        playerList = socketMap.get(data.room_id);
-        console.log(playerList);
+        //
+//        io.sockets.emit('movePolice', {room_status : peopleId, room_status : peopleId});
     });
 
-    socket.on('roomPolice', function(data) {
-        peopleId = parseInt(Math.random() * Math.pow(10,10));
-        io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
-    });
+    socket.on('moveThief', function(data) {
+        conn.query("update player set type = 2" + " where id ='" + data.sender_id + "'" , function(err, rows)
+        {
+            if(err)
+            {
+                socket.emit('moveThief', {result : 0});
+                console.log(err);
+            }else
+            {
+                console.log(rows);
+                socket.emit('moveThief', {result : 1});
 
-    socket.on('roomThief', function(data) {
-        peopleId = parseInt(Math.random() * Math.pow(10,10));
-        io.sockets.emit('roomMake', {room_status : peopleId, room_status : peopleId});
+                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
+                {
+//                    io.sockets.emit('roomInfo')
+                    console.log(rows);
+                    io.sockets.in(data.room_id).emit('roomInfo', rows);
+                });
+            }
+        });
+
+//        io.sockets.emit('moveThief', {room_status : peopleId, room_status : peopleId});
     });
 
 
@@ -262,3 +301,93 @@ io.sockets.on('connection', function(socket){
 //        console.log('Error:' + error);
 //    })
 //})
+
+
+function selectRooms()
+{
+    conn.query("select * from room" , function(err, rows)
+    {
+        var roomRows = rows;
+        console.log(roomRows);
+        console.log(roomRows[0]);
+
+        var index = 0;
+        for(var i in roomRows)
+        {
+            var roomRow = roomRows[i];
+
+            conn.query("select * from player where id='"  + roomRow.owner + "'", function(err, rows)
+            {
+                index++;
+                if(err)
+                {
+
+                }
+                else
+                {
+                    if(rows.length == 1)
+                    {
+                        roomRows[index - 1].owner = rows[0].name;
+                    }
+
+                    if(index == roomRows.length)
+                    {
+                        io.sockets.emit('roomList', {rooms : roomRows});
+                    }
+                }
+            });
+        }
+    });
+}
+
+
+function selectRoomsForClient(socket)
+{
+    conn.query("select * from room" , function(err, rows)
+    {
+        var roomRows = rows;
+        console.log(roomRows);
+        console.log(roomRows[0]);
+
+        var index = 0;
+        for(var i in roomRows)
+        {
+            var roomRow = roomRows[i];
+
+            conn.query("select * from player where id='"  + roomRow.owner + "'", function(err, rows)
+            {
+                index++;
+                if(err)
+                {
+
+                }
+                else
+                {
+                    if(rows.length == 1)
+                    {
+                        roomRows[index - 1].owner = rows[0].name;
+                    }
+
+                    if(index == roomRows.length)
+                    {
+                        socket.emit('roomList', {rooms : roomRows});
+                    }
+                }
+            });
+        }
+    });
+}
+
+function deleteRoom(room_id)
+{
+    conn.query("delete from room where id = '" + room_id + "'" , function(err, rows)
+    {
+        if(err)
+        {
+
+        }else
+        {
+            selectRooms();
+        }
+    });
+}
