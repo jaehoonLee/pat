@@ -14,10 +14,18 @@ block content
     리스트가져오기
   button(onClick="roomMake()")
     방만들기
-  button(onClick="roomEnter()")
-    입장
-  button(onClick="roomLeave()")
+  button(onClick="roomEnter('21025')")
+    입장1
+  button(onClick="roomEnter('22984')")
+    입장2
+  button(onClick="roomLeave('21025')")
     나가기
+  button(onClick="roomLeave('22984')")
+    나가기2
+  button(onClick="movePolice()")
+    경찰되기
+  button(onClick="moveThief()")
+    도둑되기
 
   h3= '게임 Request'
   button(onClick="plus()")
