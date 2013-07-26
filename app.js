@@ -95,8 +95,39 @@ io.sockets.on('connection', function(socket){
     socket.on('roomList', function(data) {
         conn.query("select * from room" , function(err, rows)
         {
-            console.log(rows);
-            io.sockets.emit('roomList', {rooms : rows});
+            var roomRows = rows;
+            console.log(roomRows);
+            console.log(roomRows[0]);
+
+            var index = 0;
+            for(var i in roomRows)
+            {
+                var roomRow = roomRows[i];
+
+                conn.query("select * from player where id='"  + roomRow.owner + "'", function(err, rows)
+                {
+                    index++;
+                    if(err)
+                    {
+
+                    }
+                    else
+                    {
+                        if(rows.length == 1)
+                        {
+                            roomRows[index - 1].owner = rows[0].name;
+                        }
+
+                        if(index == roomRows.length)
+                        {
+                            io.sockets.emit('roomList', {rooms : roomRows});
+                        }
+                    }
+                });
+
+
+            }
+
         });
     });
 
