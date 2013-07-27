@@ -91,7 +91,7 @@ io.sockets.on('connection', function(socket){
 //                        console.log("delete==============================================>")
                         roomdao.deleteRoom(roomID, io);
                     }
-		    console.log('===========================roomLeave============================');
+		             console.log('===========================roomLeave============================');
                 });
             }
         });
@@ -109,7 +109,7 @@ io.sockets.on('connection', function(socket){
                 console.log(rows);
                 socket.emit('movePolice', {result : 1});
 
-                updateRoomInfo(data.room_id);
+                roomdao.updateRoomInfo(data.room_id, io);
             }
         });
     });
@@ -126,7 +126,7 @@ io.sockets.on('connection', function(socket){
                 console.log(rows);
                 socket.emit('moveThief', {result : 1});
 
-                updateRoomInfo(data.room_id);
+                roomdao.updateRoomInfo(data.room_id, io);
             }
         });
     });
