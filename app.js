@@ -1,12 +1,10 @@
-
-/**
- * Module dependencies.
- */
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , roomdao = require('./routes/roomdao')
+  , playerdao = require('./routes/playerdao');
 
 var app = express();
 
@@ -35,21 +33,6 @@ server.listen(app.get('port'), function(){
 });
 var io = require('socket.io').listen(server);
 
-/*
-var http = require('http');
-var fs = require('fs');
-var server = http.createServer(app);
-var io = require('socket.io').listen(server);
-
-http.createServer(function(req, res) {
-    res.writeHead(200, {'content-type' : 'text/plain'});
-    res.end("Hello World!");
-}).listen(3000);
-
-console.log("Server running on 3000");
-*/
-
-//mysql DB
 var mysql = require('mysql');
 var mysqlConfig = {
     host : "127.0.0.1",
@@ -58,107 +41,33 @@ var mysqlConfig = {
     password : "12341234",
     database : "pat"
 };
-
 var conn = mysql.createConnection(mysqlConfig);
-conn.query("SELECT * FROM room", function(err, rows)
-{
-    if(err)
-    {
-        console.log("MYSQL");
-        console.log(err);
-    }
-
-    console.log(rows);
-});
 
 //Socket.io
-var HashMap = require('hashmap').HashMap;
-var socketMap = new HashMap();
-
 io.sockets.on('connection', function(socket){
     socket.emit('message', {message : 'welcome'});
 
-    //Sign in
     socket.on('signup', function(data) {
         var peopleId = parseInt(Math.random() * Math.pow(10,5));
-        conn.query("insert into player (id, name) VALUES ('" + peopleId +"','" + data.name + "');" , function(err, rows)
-        {
-            console.log(rows);
-        });
+        playerdao.insertPlayer(peopleId, data.name);
         socket.emit('signup', {player_id : peopleId});
     });
 
-    //Room
     socket.on('roomList', function(data) {
-        selectRoomsForClient(socket);
+        roomdao.selectRoomsForClient(socket);
     });
 
     socket.on('roomMake', function(data) {
-        conn.query("insert into room (name, owner) VALUES ('" + data.name +"','" + data.owner + "');" , function(err, rows)
-        {
-            if(err)
-            {
-                socket.emit('roomMake', {result : 0});
-            }else
-            {
-                //join socket in group
-                var roomId = rows.insertId;
-                socket.join(rows.insertId);
-                socket.emit('roomMake', {result : 1, room_id:rows.insertId});
-                conn.query("update player set room_id = '" + roomId + "', type = 1 where id ='" + data.owner + "'" , function(err, rows)
-                {
-                    if(err)
-                    {
-
-                    }else
-                    {
-                        socket.emit('roomInfo', {info : rows});
-                        selectRooms();
-                    }
-                });
-            }
-        });
+        roomdao.insertRoom(data.name, data.owner, socket, io);
     });
 
     socket.on('roomEnter', function(data) {
-
-        conn.query("update player set room_id = '" + data.room_id + "', type = 1 where id ='" + data.sender_id + "'" , function(err, rows)
-        {
-            if(err)
-            {
-                socket.emit('roomEnter', {result : 0});
-                console.log(err);
-            }else
-            {
-                socket.emit('roomEnter', {result : 1});
-                console.log(rows);
-
-                socket.join(data.room_id);
-
-                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
-                {
-//                    io.sockets.emit('roomInfo')
-                    console.log(rows);
-                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
-                });
-            }
-        });
-        //update Room Member
-
-//        var playerList = socketMap.get(data.room_id);
-//        if(typeof playerList == 'undefined')
-//            socketMap.set(data.room_id, [{id : data.sender_id, socket: socket}]);
-//        else
-//            playerList.push({id : data.sender_id, socket: socket});
-//
-//        playerList = socketMap.get(data.room_id);
-//        console.log(playerList);
-
-        //Send Room Change
-
+        playerdao.updatePlayer(data.room_id, data.sender_id, socket, io);
     });
 
     socket.on('roomLeave', function(data) {
+	console.log('===========================roomLeave============================');
+	console.log('Data : '+ data.sender_id + " " + data.room_id);
         conn.query("update player set type = 0, room_id = '-1" + "' where id ='" + data.sender_id + "'" , function(err, rows)
         {
             if(err)
@@ -180,29 +89,12 @@ io.sockets.on('connection', function(socket){
                         io.sockets.in(roomID).emit('roomInfo', {info : rows});
                     }else{
 //                        console.log("delete==============================================>")
-                        deleteRoom(roomID);
+                        roomdao.deleteRoom(roomID, io);
                     }
+		    console.log('===========================roomLeave============================');
                 });
             }
         });
-
-        //update Room Member
-//        var playerList = socketMap.get(data.room_id);
-//        if(typeof playerList == 'undefined')
-//            return;
-//        else
-//        {
-//            for(var i=0; i<playerList.length; i++)
-//            {
-//                if(playerList[i].id == data.sender_id)
-//                {
-//                    playerList.splice(i, 1);
-//                }
-//            }
-//        }
-//
-//        playerList = socketMap.get(data.room_id);
-//        console.log(playerList);
     });
 
     socket.on('movePolice', function(data) {
@@ -220,9 +112,6 @@ io.sockets.on('connection', function(socket){
                 updateRoomInfo(data.room_id);
             }
         });
-
-        //
-//        io.sockets.emit('movePolice', {room_status : peopleId, room_status : peopleId});
     });
 
     socket.on('moveThief', function(data) {
@@ -240,12 +129,12 @@ io.sockets.on('connection', function(socket){
                 updateRoomInfo(data.room_id);
             }
         });
-//        io.sockets.emit('moveThief', {room_status : peopleId, room_status : peopleId});
     });
 
     socket.on('roomInfo', function(data) {
-        updateRoomInfo(data.room_id);
-//        io.sockets.emit('moveThief', {room_status : peopleId, room_status : peopleId});
+	console.log('================================roomInfo ============================');
+	socket.join(data.room_id);
+        roomdao.updateRoomInfo(data.room_id, io);
     });
 
     socket.on('posUpdate', function(data) {
@@ -324,6 +213,7 @@ io.sockets.on('connection', function(socket){
 
 function selectRooms()
 {
+    console.log("==============================send Roominfo to all rooms===================");
     conn.query("select * from room" , function(err, rows)
     {
         var roomRows = rows;
@@ -413,8 +303,11 @@ function deleteRoom(room_id)
 
 function updateRoomInfo(room_id)
 {
+    console.log("=====================updateRoomInfo======================");
+    console.log("ROOM_ID : " + room_id);
     conn.query("select * from player where room_id = '" + room_id + "'" , function(err, rows)
     {
+        console.log("rows: " + rows);
         io.sockets.in(room_id).emit('roomInfo', {info : rows});
     });
 }
