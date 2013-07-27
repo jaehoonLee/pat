@@ -46,6 +46,10 @@ $(document).ready(function()
         console.log(data);
     });
 
+    socket.on('catchPlayer', function (data) {
+        console.log(data);
+    });
+
 //    socket.emit('signup',  {name:"JH"});
 //    socket.emit('roomList');
 //    socket.emit('roomMake', {name:"MADMAD", owner:"adbdse"});
@@ -96,4 +100,9 @@ function posUpdate()
 function roomInfo()
 {
     socket.emit('roomInfo', {room_id:"1"});
+}
+
+function catchPlayer()
+{
+    socket.emit('catchPlayer', {room_id:"1", player_id:"22984", caught_id :"21025"});
 }

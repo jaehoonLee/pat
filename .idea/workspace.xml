@@ -6,8 +6,8 @@
     <ignored path=".idea/workspace.xml" />
     <file path="/app.js" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374913777684" ignored="false" />
     <file path="/layout.jade" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374578603167" ignored="false" />
-    <file path="/index.jade" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374849021852" ignored="false" />
-    <file path="/socket.js" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374847659772" ignored="false" />
+    <file path="/index.jade" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374922785542" ignored="false" />
+    <file path="/socket.js" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374923649099" ignored="false" />
     <file path="$PROJECT_DIR$/../../simpleChat/app.js" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374583720312" ignored="false" />
     <file path="/playerdao.js" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374910971501" ignored="false" />
     <file path="/roomdao.js" changelist="095b1fff-b700-4a89-9ab5-2434c07e8453" time="1374921908391" ignored="false" />
@@ -30,10 +30,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="app.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="59" selection-start="976" selection-end="976" vertical-scroll-proportion="0.38319328">
+            <state line="159" column="81" selection-start="5219" selection-end="5219" vertical-scroll-proportion="-13.785714">
               <folding />
             </state>
           </provider>
@@ -51,7 +51,7 @@
       <file leaf-file-name="roomdao.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/roomdao.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="121" column="19" selection-start="3756" selection-end="3756" vertical-scroll-proportion="0.0">
+            <state line="126" column="4" selection-start="3842" selection-end="3842" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -87,16 +87,16 @@
       <file leaf-file-name="index.jade" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/index.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="34" selection-start="451" selection-end="451" vertical-scroll-proportion="0.0">
+            <state line="18" column="34" selection-start="352" selection-end="357" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="socket.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="socket.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/javascripts/socket.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="53" selection-start="385" selection-end="385" vertical-scroll-proportion="0.0">
+            <state line="106" column="45" selection-start="2209" selection-end="2209" vertical-scroll-proportion="0.78651685">
               <folding />
             </state>
           </provider>
@@ -123,11 +123,11 @@
       <list>
         <option value="$PROJECT_DIR$/views/layout.jade" />
         <option value="$PROJECT_DIR$/routes/dbmanager.js" />
-        <option value="$PROJECT_DIR$/public/javascripts/socket.js" />
         <option value="$PROJECT_DIR$/routes/playerdao.js" />
-        <option value="$PROJECT_DIR$/views/index.jade" />
         <option value="$PROJECT_DIR$/routes/roomdao.js" />
+        <option value="$PROJECT_DIR$/views/index.jade" />
         <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/public/javascripts/socket.js" />
       </list>
     </option>
   </component>
@@ -430,13 +430,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/user.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/routes/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -458,30 +451,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/index.jade">
+    <entry file="file://$PROJECT_DIR$/routes/user.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="34" selection-start="451" selection-end="451" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/socket.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="53" selection-start="385" selection-end="385" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/roomdao.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="121" column="19" selection-start="3756" selection-end="3756" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="59" selection-start="976" selection-end="976" vertical-scroll-proportion="0.38319328">
+        <state line="159" column="81" selection-start="5219" selection-end="5219" vertical-scroll-proportion="-13.785714">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/roomdao.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="126" column="4" selection-start="3842" selection-end="3842" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/index.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="34" selection-start="352" selection-end="357" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/javascripts/socket.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="106" column="45" selection-start="2209" selection-end="2209" vertical-scroll-proportion="0.78651685">
           <folding />
         </state>
       </provider>

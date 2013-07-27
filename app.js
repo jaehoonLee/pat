@@ -132,8 +132,8 @@ io.sockets.on('connection', function(socket){
     });
 
     socket.on('roomInfo', function(data) {
-	console.log('================================roomInfo ============================');
-	socket.join(data.room_id);
+    	console.log('================================roomInfo ============================');
+    	socket.join(data.room_id);
         roomdao.updateRoomInfo(data.room_id, io);
     });
 
@@ -150,16 +150,27 @@ io.sockets.on('connection', function(socket){
                 socket.emit('posUpdate', {result : 1});
 
 
-                conn.query("select * from player where room_id = '" + data.room_id + "'" , function(err, rows)
-                {
-                    io.sockets.in(data.room_id).emit('roomInfo', {info : rows});
-                });
+                roomdao.updateRoomInfo(data.room_id, io);
             }
         });
     });
 
     socket.on('catchPlayer', function(data) {
+        console.log('================================catchPlayer ============================');
+        conn.query("update player set type = 3" + " where id ='" + data.caught_id + "'" , function(err, rows)
+        {
+            if(err)
+            {
+                socket.emit('catchPlayer', {result : 0});
+                console.log(err);
+            }else
+            {
+                console.log(rows);
+                socket.emit('catchPlayer', {result : 1});
 
+                roomdao.updateRoomInfo(data.room_id, io);
+            }
+        });
     });
 
 
