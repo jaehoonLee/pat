@@ -126,15 +126,14 @@ module.exports = {
     },
     updateRoomInfo: function (room_id, io) {
         console.log("=====================updateRoomInfo======================");
-        console.log("ROOM_ID : " + room_id);
         conn.query("select * from player where room_id = '" + room_id + "'" , function(err, rows)
         {
             var players = rows;
+            console.log("ROOM_ID : " + room_id + ", rows :" + players);
             conn.query("select owner from room where id = '" + room_id + "'", function(err, rows)
             {
                 if(rows.length != 0)
-                console.log("rows: " + rows[0].owner);
-                io.sockets.in(room_id).emit('roomInfo', {info : players, owner : rows[0].owner});
+                    io.sockets.in(room_id).emit('roomInfo', {info : players, owner : rows[0].owner});
             });
         });
     }
