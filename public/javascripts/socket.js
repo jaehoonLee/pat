@@ -50,6 +50,10 @@ $(document).ready(function()
         console.log(data);
     });
 
+    socket.on('startGame', function (data) {
+        console.log(data);
+    });
+
 //    socket.emit('signup',  {name:"JH"});
 //    socket.emit('roomList');
 //    socket.emit('roomMake', {name:"MADMAD", owner:"adbdse"});
@@ -105,4 +109,9 @@ function roomInfo()
 function catchPlayer()
 {
     socket.emit('catchPlayer', {room_id:"1", player_id:"22984", caught_id :"21025"});
+}
+
+function startGame()
+{
+    socket.emit('startGame', {room_id:"1"});
 }

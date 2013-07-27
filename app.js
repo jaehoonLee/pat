@@ -133,6 +133,7 @@ io.sockets.on('connection', function(socket){
 
     socket.on('roomInfo', function(data) {
     	console.log('================================roomInfo ============================');
+        console.log('room_id : ' + data.room_id);
     	socket.join(data.room_id);
         roomdao.updateRoomInfo(data.room_id, io);
     });
@@ -173,7 +174,11 @@ io.sockets.on('connection', function(socket){
         });
     });
 
-
+    socket.on('startGame', function(data) {
+        console.log('room_id : ' + data.room_id);
+        socket.emit('startGame', {result : 1});
+        io.sockets.in(data.room_id).emit('roomInfo', {start : 1});
+    });
    //Map
 });
 
