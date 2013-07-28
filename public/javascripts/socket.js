@@ -108,7 +108,17 @@ function roomInfo()
 
 function catchPlayer()
 {
-    socket.emit('catchPlayer', {room_id:"1", player_id:"22984", caught_id :"21025"});
+    socket.emit('catchPlayer', {room_id:"1", player_id:"21025", caught_id :"28312"});
+}
+
+function catchPlayerWrong()
+{
+    socket.emit('catchPlayer', {room_id:"1", player_id:"28312", caught_id :"28312"});
+}
+
+function catchPlayerWrong2()
+{
+    socket.emit('catchPlayer', {room_id:"1", player_id:"21025", caught_id :"21025"});
 }
 
 function startGame()

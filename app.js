@@ -158,19 +158,33 @@ io.sockets.on('connection', function(socket){
 
     socket.on('catchPlayer', function(data) {
         console.log('================================catchPlayer ============================');
-        conn.query("update player set type = 3" + " where id ='" + data.caught_id + "'" , function(err, rows)
-        {
-            if(err)
-            {
-                socket.emit('catchPlayer', {result : 0});
-                console.log(err);
-            }else
-            {
-                console.log(rows);
-                socket.emit('catchPlayer', {result : 1});
+        conn.query("select * from player where id ='" + data.caught_id + "'", function(err, rows){
+            if(rows.length == 0)
+                return;
+            if(rows[0].type != 2)
+                return;
+            console.log('============ thief safe ===========');
+            conn.query("select * from player where id ='" + data.player_id + "'", function(err, rows){
+                if(rows.length == 0)
+                    return;
+                if(rows[0].type != 1)
+                    return;
+                console.log('============ police safe ===========');
+                conn.query("update player set type = 3" + " where id ='" + data.caught_id + "'" , function(err, rows)
+                {
+                    if(err)
+                    {
+                        socket.emit('catchPlayer', {result : 0});
+                        console.log(err);
+                    }else
+                    {
+                        console.log(rows);
+                        socket.emit('catchPlayer', {result : 1});
 
-                roomdao.updateRoomInfo(data.room_id, io);
-            }
+                        roomdao.updateRoomInfo(data.room_id, io);
+                    }
+                });
+            });
         });
     });
 

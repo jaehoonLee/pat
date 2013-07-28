@@ -2,7 +2,7 @@ extends layout
 
 block content
   script(src='javascripts/socket.js')
-  h1= '도둑과 경찰 테스트'
+  h1= '경찰과 도둑 테스트'
   p Console로 들어오는 정보를 확인하세요.
 
   h3= '로그인 Request'
@@ -34,7 +34,9 @@ block content
       지도정보갱신
   button(onClick="catchPlayer()")
       도둑잡았다
+  button(onClick="catchPlayerWrong()")
+      도둑잡았다(경찰 잘못)
+  button(onClick="catchPlayerWrong2()")
+      도둑잡았다(도둑 잘못)
   button(onClick="startGame()")
       게임시작
-  button(onClick="minus()")
-      빼기
